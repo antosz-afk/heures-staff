@@ -119,10 +119,11 @@ let state = { staff: [], weeks: {}, currentWeek: getWeekKey(new Date()) };
 
 function getWeekKey(d) {
   const dt = new Date(d);
+  dt.setHours(12, 0, 0, 0);
   const day = dt.getDay();
   const diff = dt.getDate() - day + (day === 0 ? -6 : 1);
-  const mon = new Date(new Date(dt).setDate(diff));
-  return mon.toISOString().slice(0,10);
+  dt.setDate(diff);
+  return dt.toISOString().slice(0, 10);
 }
 
 function weekLabel(key) {
@@ -287,7 +288,7 @@ async function processFile(file) {
     }
 
     const parsed = await resp.json();
-    const wk = parsed.weekStart;
+    const wk = getWeekKey(new Date(parsed.weekStart + 'T12:00:00'));
     if (!state.weeks[wk]) state.weeks[wk]={};
 
     let ok=[], ko=[];
