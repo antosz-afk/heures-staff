@@ -186,9 +186,25 @@ function calcSolde(staffId) {
   return sol;
 }
 
-function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-function load() {
-  try { const d=localStorage.getItem(STORAGE_KEY); if(d) state={...state,...JSON.parse(d)}; } catch(e){}
+async function save() {
+  try {
+    await fetch('/.netlify/functions/db', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: JSON.stringify(state) })
+    });
+  } catch(e) { console.error('Save error', e); }
+}
+
+async function load() {
+  try {
+    const r = await fetch('/.netlify/functions/db');
+    const text = await r.text();
+    if (text && text !== 'null') {
+      const parsed = JSON.parse(text);
+      state = { ...state, ...parsed };
+    }
+  } catch(e) { console.error('Load error', e); }
 }
 
 function toast(msg, dur=2500) {
@@ -479,8 +495,9 @@ function closeModal() { document.getElementById('modal-container').innerHTML='';
 function closeMBg(e) { if(e.target.classList.contains('modal-bg')) closeModal(); }
 
 // ── INIT ──────────────────────────────────────
-load();
-if(!state.staff.length) {
+async function init() {
+  await load();
+  if(!state.staff.length) {
   state.staff=[
     {id:'1',name:'Antonin',contract:35,role:'Manager',soldeInit:0},
     {id:'2',name:'Patryk',contract:35,role:'Barman',soldeInit:0},
@@ -490,9 +507,11 @@ if(!state.staff.length) {
     {id:'6',name:'Jonas',contract:35,role:'',soldeInit:0},
     {id:'7',name:'Eric',contract:35,role:'',soldeInit:0},
   ];
-  save();
+  await save();
+  }
+  renderPlanning();
 }
-renderPlanning();
+init();
 </script>
 </body>
 </html>
