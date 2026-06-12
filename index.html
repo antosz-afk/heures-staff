@@ -82,11 +82,26 @@
   .empty-icon{font-size:40px;margin-bottom:10px}
   .toast{position:fixed;bottom:20px;right:20px;background:#1a1a1a;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:300;opacity:0;transition:opacity 0.2s;pointer-events:none}
   .toast.show{opacity:1}
-  @media(max-width:750px){
-    .grid-header,.staff-row{grid-template-columns:90px repeat(7,minmax(52px,1fr)) 70px}
-    .staff-name{font-size:12px}
-    .time-input{font-size:10px}
+  @media(max-width:650px){
+    .planning-grid{display:none}
+    .mobile-planning{display:block!important}
+    .week-bar{gap:6px}
+    .week-label{font-size:13px;min-width:140px}
   }
+  @media(min-width:651px){
+    .mobile-planning{display:none}
+  }
+  .mobile-planning{display:none}
+  .mobile-card{background:#fff;border:1px solid #e8e6e0;border-radius:12px;margin-bottom:10px;overflow:hidden}
+  .mobile-card-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f5f4f0;border-bottom:1px solid #e8e6e0}
+  .mobile-card-name{font-size:14px;font-weight:500}
+  .mobile-card-total{text-align:right}
+  .mobile-day-row{display:grid;grid-template-columns:80px 1fr;align-items:center;padding:6px 14px;border-bottom:1px solid #f5f4f0}
+  .mobile-day-row:last-child{border-bottom:none}
+  .mobile-day-label{font-size:12px;color:#999}
+  .mobile-time-input{width:100%;padding:5px 8px;border:1px solid transparent;border-radius:6px;font-size:12px;background:transparent;color:#1a1a1a}
+  .mobile-time-input:focus{outline:none;border-color:#1a1a1a;background:#fff}
+  .mobile-time-input.repos{color:#ccc}
 </style>
 </head>
 <body>
@@ -256,7 +271,48 @@ function renderPlanning() {
     ${state.staff.length===0
       ? `<div class="empty"><div class="empty-icon">👥</div>Ajoutez des membres dans l'onglet <strong>Équipe</strong></div>`
       : `<div class="planning-grid"><div class="grid-header"><div>Employé</div>${headerCells}<div style="text-align:right;padding-right:12px">Total</div></div>${rows}</div>`
-    }`;
+    }
+    <div id="mobile-planning"></div>`;
+  renderMobilePlanning();
+}
+
+function renderMobilePlanning() {
+  const el = document.getElementById('mobile-planning');
+  if (!el) return;
+  const wk = state.currentWeek;
+  if (state.staff.length === 0) { el.innerHTML = ''; return; }
+  
+  let html = '';
+  for (const s of state.staff) {
+    const w = ((state.weeks[wk]||{})[s.id])||{};
+    const total = calcWeek(s.id, wk);
+    const diff = Math.round((total-s.contract)*100)/100;
+    const dStr = diff>0?`+${fmtH(diff)}`:diff<0?`-${fmtH(Math.abs(diff))}`:'—';
+    const dCls = diff>0?'pos':diff<0?'neg':'neu';
+    
+    let dayRows = '';
+    for (let i=0;i<7;i++) {
+      const val = w[i]||'';
+      const isR = !val||val.toLowerCase()==='repos';
+      const dayDate = getDayDate(wk,i);
+      dayRows += `<div class="mobile-day-row">
+        <span class="mobile-day-label">${DAYS[i]} ${dayDate}</span>
+        <input class="mobile-time-input${isR?' repos':''}" data-sid="${s.id}" data-day="${i}" value="${val}" placeholder="Repos" onchange="onTimeChange(this)" oninput="this.classList.toggle('repos',!this.value||this.value.toLowerCase()==='repos')">
+      </div>`;
+    }
+    
+    html += `<div class="mobile-card">
+      <div class="mobile-card-header">
+        <div><div class="mobile-card-name">${s.name}</div><div style="font-size:11px;color:#999">${s.contract}h/sem</div></div>
+        <div class="mobile-card-total">
+          <div style="font-size:14px;font-weight:500">${total>0?fmtH(total):'—'}</div>
+          <div class="diff-badge diff-${dCls}">${dStr}</div>
+        </div>
+      </div>
+      ${dayRows}
+    </div>`;
+  }
+  el.innerHTML = html;
 }
 
 function onTimeChange(input) {
@@ -272,6 +328,7 @@ function onTimeChange(input) {
   const dCls=diff>0?'pos':diff<0?'neg':'neu';
   const row=input.closest('.staff-row');
   if(row){ const tc=row.querySelector('.total-cell'); tc.innerHTML=`<div class="total-h">${total>0?fmtH(total):'—'}</div><div class="diff-badge diff-${dCls}">${dStr}</div>`; }
+  renderMobilePlanning();
 }
 
 function changeWeek(dir) { state.currentWeek=dir<0?prevWeek(state.currentWeek):nextWeek(state.currentWeek); renderPlanning(); }
