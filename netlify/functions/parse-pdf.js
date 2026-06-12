@@ -20,10 +20,7 @@ exports.handler = async function(event) {
         role: 'user',
         content: [
           { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdfBase64 } },
-          { type: 'text', text: `Planning hebdomadaire. Membres connus: ${staffNames || 'inconnus'}.
-Retourne UNIQUEMENT un JSON valide (sans markdown ni backticks):
-{"weekStart":"YYYY-MM-DD","schedule":{"Prenom":{"0":"HH:MM-HH:MM","1":"Repos",...}}}
-0=lundi, 6=dimanche. Format horaires HH:MM-HH:MM. Mets "Repos" si absent ou vide.` }
+          { type: 'text', text: `Planning hebdomadaire. Membres connus: ${staffNames || 'inconnus'}.\nRetourne UNIQUEMENT un JSON valide (sans markdown ni backticks):\n{"weekStart":"YYYY-MM-DD","schedule":{"Prenom":{"0":"HH:MM-HH:MM","1":"Repos",...}}}\n0=lundi, 6=dimanche. Format horaires HH:MM-HH:MM. Mets "Repos" si absent ou vide.` }
         ]
       }]
     });
@@ -60,3 +57,6 @@ Retourne UNIQUEMENT un JSON valide (sans markdown ni backticks):
     };
 
   } catch(e) {
+    return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
+  }
+};
