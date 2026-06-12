@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heures Staff — Le Pan Bar</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a1a;min-height:100vh}
+  .topbar{background:#1a1a1a;color:#fff;padding:0 1.5rem;height:52px;display:flex;align-items:center;gap:1rem}
+  .topbar-title{font-size:15px;font-weight:600;letter-spacing:0.02em;margin-right:auto}
+  .topbar-sub{font-size:12px;color:#888}
+  .nav{background:#fff;border-bottom:1px solid #e8e6e0;padding:0 1.5rem;display:flex;gap:4px}
+  .tab{padding:12px 16px;font-size:13px;cursor:pointer;border:none;background:none;color:#666;border-bottom:2px solid transparent;transition:all 0.15s}
+  .tab:hover{color:#1a1a1a}
+  .tab.active{color:#1a1a1a;font-weight:500;border-bottom-color:#1a1a1a}
+  .main{padding:1.5rem;max-width:1020px;margin:0 auto}
+  .week-bar{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;flex-wrap:wrap}
+  .week-label{font-size:14px;font-weight:500;min-width:170px;text-align:center}
+  .btn{padding:7px 14px;border:1px solid #d4d2cc;border-radius:8px;font-size:13px;cursor:pointer;background:#fff;color:#1a1a1a;display:inline-flex;align-items:center;gap:6px;transition:background 0.1s}
+  .btn:hover{background:#f5f4f0}
+  .btn.primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+  .btn.primary:hover{background:#333}
+  .btn.danger{color:#c0392b;border-color:#e8b4b0}
+  .btn.danger:hover{background:#fdf0ef}
+  .planning-grid{background:#fff;border:1px solid #e8e6e0;border-radius:12px;overflow:hidden}
+  .grid-header{display:grid;grid-template-columns:140px repeat(7,1fr) 90px;background:#f5f4f0;border-bottom:1px solid #e8e6e0}
+  .grid-header div{padding:8px 4px;font-size:11px;font-weight:600;color:#666;text-align:center;text-transform:uppercase;letter-spacing:0.04em}
+  .grid-header div:first-child{text-align:left;padding-left:16px}
+  .staff-row{display:grid;grid-template-columns:140px repeat(7,1fr) 90px;border-bottom:1px solid #f0ede8;align-items:center}
+  .staff-row:last-child{border-bottom:none}
+  .staff-row:hover{background:#fafaf8}
+  .staff-info{padding:10px 16px}
+  .staff-name{font-size:13px;font-weight:500}
+  .staff-contract{font-size:11px;color:#999;margin-top:2px}
+  .time-cell{padding:4px 2px;text-align:center}
+  .time-input{width:100%;padding:5px 3px;border:1px solid transparent;border-radius:6px;font-size:11px;text-align:center;background:transparent;color:#1a1a1a;transition:all 0.1s}
+  .time-input:hover{border-color:#d4d2cc;background:#fff}
+  .time-input:focus{outline:none;border-color:#1a1a1a;background:#fff}
+  .time-input.repos{color:#ccc}
+  .total-cell{padding:8px 12px;text-align:right}
+  .total-h{font-size:13px;font-weight:500}
+  .diff-badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:20px;margin-top:3px}
+  .diff-pos{background:#e8f5ee;color:#1a7a4a}
+  .diff-neg{background:#fdecea;color:#c0392b}
+  .diff-neu{background:#f0ede8;color:#999}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1.5rem}
+  .card{background:#fff;border:1px solid #e8e6e0;border-radius:10px;padding:1rem;text-align:center}
+  .card-label{font-size:11px;color:#999;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
+  .card-val{font-size:24px;font-weight:600}
+  .card-val.pos{color:#1a7a4a}
+  .card-val.neg{color:#c0392b}
+  .solde-list{background:#fff;border:1px solid #e8e6e0;border-radius:12px;overflow:hidden}
+  .solde-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #f0ede8}
+  .solde-item:last-child{border-bottom:none}
+  .solde-name{font-size:13px;font-weight:500}
+  .solde-contract{font-size:11px;color:#999}
+  .solde-right{display:flex;align-items:center;gap:10px}
+  .solde-badge{font-size:13px;font-weight:600;padding:4px 12px;border-radius:20px}
+  .staff-table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e8e6e0;border-radius:12px;overflow:hidden}
+  .staff-table th{text-align:left;padding:10px 16px;font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:0.05em;background:#f5f4f0;border-bottom:1px solid #e8e6e0}
+  .staff-table td{padding:10px 16px;font-size:13px;border-bottom:1px solid #f0ede8}
+  .staff-table tr:last-child td{border-bottom:none}
+  .staff-table tr:hover td{background:#fafaf8}
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:200}
+  .modal{background:#fff;border-radius:14px;padding:1.5rem;width:min(480px,92vw);max-height:88vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.15)}
+  .modal h2{font-size:16px;font-weight:600;margin-bottom:1rem}
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:12px;color:#666;margin-bottom:4px;font-weight:500}
+  .field input,.field select{width:100%;padding:8px 10px;border:1px solid #d4d2cc;border-radius:8px;font-size:13px;background:#fff;color:#1a1a1a}
+  .field input:focus,.field select:focus{outline:none;border-color:#1a1a1a}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:1rem}
+  .upload-zone{border:2px dashed #d4d2cc;border-radius:10px;padding:2rem;text-align:center;cursor:pointer;color:#999;font-size:13px;transition:all 0.15s}
+  .upload-zone:hover{border-color:#1a1a1a;color:#1a1a1a;background:#fafaf8}
+  .upload-icon{font-size:32px;margin-bottom:8px}
+  .import-status{margin-top:12px;font-size:13px;padding:10px 12px;border-radius:8px;display:none;line-height:1.6}
+  .import-status.loading{background:#f5f4f0;color:#666;display:block}
+  .import-status.success{background:#e8f5ee;color:#1a7a4a;display:block}
+  .import-status.error{background:#fdecea;color:#c0392b;display:block}
+  .empty{text-align:center;padding:3rem;color:#999;font-size:13px}
+  .empty-icon{font-size:40px;margin-bottom:10px}
+  .toast{position:fixed;bottom:20px;right:20px;background:#1a1a1a;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:300;opacity:0;transition:opacity 0.2s;pointer-events:none}
+  .toast.show{opacity:1}
+  @media(max-width:750px){
+    .grid-header,.staff-row{grid-template-columns:90px repeat(7,minmax(52px,1fr)) 70px}
+    .staff-name{font-size:12px}
+    .time-input{font-size:10px}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-title">⏱ Heures Staff</span>
+  <span class="topbar-sub">Le Pan Bar</span>
+</div>
+
+<div class="nav">
+  <button class="tab active" onclick="showTab('planning')" id="tab-planning">Planning</button>
+  <button class="tab" onclick="showTab('soldes')" id="tab-soldes">Soldes</button>
+  <button class="tab" onclick="showTab('staff')" id="tab-staff">Équipe</button>
+</div>
+
+<div class="main">
+  <div id="view-planning"></div>
+  <div id="view-soldes" style="display:none"></div>
+  <div id="view-staff" style="display:none"></div>
+</div>
+
+<div id="modal-container"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DAYS = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+const STORAGE_KEY = 'lepanbar_hrs_v1';
+
+let state = { staff: [], weeks: {}, currentWeek: getWeekKey(new Date()) };
+
+function getWeekKey(d) {
+  const dt = new Date(d);
+  const day = dt.getDay();
+  const diff = dt.getDate() - day + (day === 0 ? -6 : 1);
+  const mon = new Date(new Date(dt).setDate(diff));
+  return mon.toISOString().slice(0,10);
+}
+
+function weekLabel(key) {
+  const mon = new Date(key);
+  const sun = new Date(key); sun.setDate(sun.getDate()+6);
+  const f = d => d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});
+  return `${f(mon)} – ${f(sun)}`;
+}
+
+function prevWeek(k){ const d=new Date(k); d.setDate(d.getDate()-7); return getWeekKey(d); }
+function nextWeek(k){ const d=new Date(k); d.setDate(d.getDate()+7); return getWeekKey(d); }
+
+function parseHours(s) {
+  if (!s||!s.trim()||s.toLowerCase()==='repos'||s==='-') return null;
+  const parts = s.trim().split(/[-–]/);
+  if (parts.length < 2) return null;
+  const toMin = t => {
+    t = t.trim().replace(/h/i,':');
+    const [h,m] = t.split(':').map(Number);
+    return (h||0)*60+(m||0);
+  };
+  let start = toMin(parts[0]), end = toMin(parts[1]);
+  if (end < start) end += 1440;
+  const h = (end-start)/60;
+  return h > 0 ? h : null;
+}
+
+function calcWeek(staffId, weekKey) {
+  const w = ((state.weeks[weekKey]||{})[staffId])||{};
+  let t = 0;
+  for (let i=0;i<7;i++) { const h=parseHours(w[i]||''); if(h) t+=h; }
+  return Math.round(t*100)/100;
+}
+
+function calcSolde(staffId) {
+  const s = state.staff.find(x=>x.id===staffId);
+  if (!s) return 0;
+  let sol = s.soldeInit||0;
+  for (const k of Object.keys(state.weeks).sort()) {
+    sol = Math.round((sol + calcWeek(staffId,k) - s.contract)*100)/100;
+  }
+  return sol;
+}
+
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function load() {
+  try { const d=localStorage.getItem(STORAGE_KEY); if(d) state={...state,...JSON.parse(d)}; } catch(e){}
+}
+
+function toast(msg, dur=2500) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+// ── PLANNING ──────────────────────────────────
+function renderPlanning() {
+  const el = document.getElementById('view-planning');
+  const wk = state.currentWeek;
+
+  const getDayLabel = i => {
+    const d = new Date(wk); d.setDate(d.getDate()+i);
+    return `${DAYS[i]}<br><span style="font-weight:400;color:#aaa;font-size:10px">${d.getDate()}/${d.getMonth()+1}</span>`;
+  };
+
+  let rows = '';
+  for (const s of state.staff) {
+    const w = ((state.weeks[wk]||{})[s.id])||{};
+    let cells = '';
+    for (let i=0;i<7;i++) {
+      const val = w[i]||'';
+      const isR = !val||val.toLowerCase()==='repos';
+      cells += `<div class="time-cell"><input class="time-input${isR?' repos':''}" data-sid="${s.id}" data-day="${i}" value="${val}" placeholder="Repos" onchange="onTimeChange(this)" oninput="this.classList.toggle('repos',!this.value||this.value.toLowerCase()==='repos')"></div>`;
+    }
+    const total = calcWeek(s.id, wk);
+    const diff = Math.round((total-s.contract)*100)/100;
+    const dStr = diff>0?`+${diff.toFixed(1)}h`:diff<0?`${diff.toFixed(1)}h`:'—';
+    const dCls = diff>0?'pos':diff<0?'neg':'neu';
+    rows += `<div class="staff-row">
+      <div class="staff-info"><div class="staff-name">${s.name}</div><div class="staff-contract">${s.contract}h/sem</div></div>
+      ${cells}
+      <div class="total-cell">
+        <div class="total-h">${total>0?total.toFixed(1)+'h':'—'}</div>
+        <div class="diff-badge diff-${dCls}">${dStr}</div>
+      </div>
+    </div>`;
+  }
+
+  const headerCells = DAYS.map((_,i)=>`<div>${getDayLabel(i)}</div>`).join('');
+
+  el.innerHTML = `
+    <div class="week-bar">
+      <button class="btn" onclick="changeWeek(-1)">&#8592;</button>
+      <span class="week-label">Semaine du ${weekLabel(wk)}</span>
+      <button class="btn" onclick="changeWeek(1)">&#8594;</button>
+      <button class="btn" onclick="goToday()">Aujourd'hui</button>
+      <button class="btn primary" onclick="openImport()" style="margin-left:auto">&#8679; Importer PDF</button>
+    </div>
+    ${state.staff.length===0
+      ? `<div class="empty"><div class="empty-icon">👥</div>Ajoutez des membres dans l'onglet <strong>Équipe</strong></div>`
+      : `<div class="planning-grid"><div class="grid-header"><div>Employé</div>${headerCells}<div style="text-align:right;padding-right:12px">Total</div></div>${rows}</div>`
+    }`;
+}
+
+function onTimeChange(input) {
+  const sid=input.dataset.sid, day=parseInt(input.dataset.day), val=input.value.trim();
+  if (!state.weeks[state.currentWeek]) state.weeks[state.currentWeek]={};
+  if (!state.weeks[state.currentWeek][sid]) state.weeks[state.currentWeek][sid]={};
+  state.weeks[state.currentWeek][sid][day]=val;
+  save();
+  const s=state.staff.find(x=>x.id===sid); if(!s) return;
+  const total=calcWeek(sid,state.currentWeek);
+  const diff=Math.round((total-s.contract)*100)/100;
+  const dStr=diff>0?`+${diff.toFixed(1)}h`:diff<0?`${diff.toFixed(1)}h`:'—';
+  const dCls=diff>0?'pos':diff<0?'neg':'neu';
+  const row=input.closest('.staff-row');
+  if(row){ const tc=row.querySelector('.total-cell'); tc.innerHTML=`<div class="total-h">${total>0?total.toFixed(1)+'h':'—'}</div><div class="diff-badge diff-${dCls}">${dStr}</div>`; }
+}
+
+function changeWeek(dir) { state.currentWeek=dir<0?prevWeek(state.currentWeek):nextWeek(state.currentWeek); renderPlanning(); }
+function goToday() { state.currentWeek=getWeekKey(new Date()); renderPlanning(); }
+
+// ── IMPORT PDF (via Netlify Function) ─────────
+function openImport() {
+  document.getElementById('modal-container').innerHTML = `
+    <div class="modal-bg" onclick="closeMBg(event)">
+      <div class="modal">
+        <h2>Importer un planning PDF</h2>
+        <p style="font-size:13px;color:#666;margin-bottom:1rem">L'IA extrait automatiquement les horaires de chaque employé.</p>
+        <div class="upload-zone" onclick="document.getElementById('pdf-in').click()" ondragover="event.preventDefault()" ondrop="onDrop(event)">
+          <div class="upload-icon">📄</div>
+          Cliquez ou déposez votre PDF ici
+        </div>
+        <input type="file" id="pdf-in" accept=".pdf" style="display:none" onchange="onFileSelect(this)">
+        <div class="import-status" id="imp-status"></div>
+        <div class="modal-actions"><button class="btn" onclick="closeModal()">Fermer</button></div>
+      </div>
+    </div>`;
+}
+
+function onDrop(e) { e.preventDefault(); const f=e.dataTransfer.files[0]; if(f) processFile(f); }
+function onFileSelect(i) { const f=i.files[0]; if(f) processFile(f); }
+
+async function processFile(file) {
+  const st=document.getElementById('imp-status');
+  st.className='import-status loading'; st.textContent='⏳ Lecture du PDF…';
+
+  try {
+    const b64 = await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result.split(',')[1]); r.onerror=()=>rej(new Error('Lecture impossible')); r.readAsDataURL(file); });
+    st.textContent='🤖 Analyse IA en cours…';
+
+    const names = state.staff.map(s=>s.name).join(', ');
+    const resp = await fetch('/api/parse-pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pdfBase64: b64, staffNames: names })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(()=>({error:'Erreur serveur'}));
+      throw new Error(err.error || 'Erreur serveur');
+    }
+
+    const parsed = await resp.json();
+    const wk = getWeekKey(new Date(parsed.weekStart));
+    if (!state.weeks[wk]) state.weeks[wk]={};
+
+    let ok=[], ko=[];
+    for(const [nom,days] of Object.entries(parsed.schedule)) {
+      const found=state.staff.find(s=>s.name.toLowerCase().includes(nom.toLowerCase())||nom.toLowerCase().includes(s.name.toLowerCase()));
+      if(found){
+        if(!state.weeks[wk][found.id]) state.weeks[wk][found.id]={};
+        for(const [d,v] of Object.entries(days)) state.weeks[wk][found.id][parseInt(d)]=v;
+        ok.push(found.name);
+      } else { ko.push(nom); }
+    }
+
+    save(); state.currentWeek=wk;
+    st.className='import-status success';
+    st.innerHTML=`✅ ${ok.length} employé(s) importé(s) : ${ok.join(', ')}.${ko.length?`<br>⚠️ Non reconnus : ${ko.join(', ')} — vérifiez les noms dans Équipe.`:''}<br><small style="opacity:0.8">Semaine : ${weekLabel(wk)}</small>`;
+    setTimeout(()=>{ closeModal(); showTab('planning'); }, 3500);
+
+  } catch(e) {
+    st.className='import-status error';
+    st.textContent=`❌ Erreur : ${e.message}`;
+  }
+}
+
+// ── SOLDES ────────────────────────────────────
+function renderSoldes() {
+  const el=document.getElementById('view-soldes');
+  if(!state.staff.length){ el.innerHTML=`<div class="empty"><div class="empty-icon">📊</div>Aucun membre dans l'équipe</div>`; return; }
+
+  const wks=Object.keys(state.weeks).length;
+  const pos=state.staff.filter(s=>calcSolde(s.id)>0).length;
+  const neg=state.staff.filter(s=>calcSolde(s.id)<0).length;
+
+  const items=state.staff.map(s=>{
+    const sol=calcSolde(s.id);
+    const str=sol>0?`+${sol.toFixed(1)}h`:sol===0?'0h':`${sol.toFixed(1)}h`;
+    const bg=sol>0?'#e8f5ee':sol<0?'#fdecea':'#f0ede8';
+    const fc=sol>0?'#1a7a4a':sol<0?'#c0392b':'#999';
+    return `<div class="solde-item">
+      <div><div class="solde-name">${s.name}</div><div class="solde-contract">${s.contract}h/sem · ${s.role||'—'}</div></div>
+      <div class="solde-right">
+        <span class="solde-badge" style="background:${bg};color:${fc}">${str}</span>
+        <button class="btn" style="font-size:12px;padding:4px 10px" onclick="openAjust('${s.id}')">Ajuster</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  el.innerHTML=`
+    <div class="cards">
+      <div class="card"><div class="card-label">Semaines suivies</div><div class="card-val">${wks}</div></div>
+      <div class="card"><div class="card-label">En positif</div><div class="card-val pos">${pos}</div></div>
+      <div class="card"><div class="card-label">En négatif</div><div class="card-val neg">${neg}</div></div>
+    </div>
+    <div class="solde-list">${items}</div>`;
+}
+
+function openAjust(sid) {
+  const s=state.staff.find(x=>x.id===sid); if(!s) return;
+  document.getElementById('modal-container').innerHTML=`
+    <div class="modal-bg" onclick="closeMBg(event)">
+      <div class="modal">
+        <h2>Ajuster le solde — ${s.name}</h2>
+        <p style="font-size:13px;color:#666;margin-bottom:1rem">Solde actuel : <strong>${calcSolde(sid).toFixed(1)}h</strong>.<br>Le solde initial permet de reprendre un historique existant.</p>
+        <div class="field"><label>Solde initial (heures)</label><input type="number" step="0.5" id="adj-v" value="${s.soldeInit||0}"></div>
+        <div class="modal-actions">
+          <button class="btn" onclick="closeModal()">Annuler</button>
+          <button class="btn primary" onclick="saveAjust('${sid}')">Enregistrer</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function saveAjust(sid) {
+  const s=state.staff.find(x=>x.id===sid);
+  if(s){ s.soldeInit=parseFloat(document.getElementById('adj-v').value)||0; save(); }
+  closeModal(); renderSoldes(); toast('Solde mis à jour');
+}
+
+// ── ÉQUIPE ────────────────────────────────────
+function renderStaff() {
+  const el=document.getElementById('view-staff');
+  const rows=state.staff.map(s=>`
+    <tr>
+      <td style="font-weight:500">${s.name}</td>
+      <td>${s.contract}h</td>
+      <td style="color:#999">${s.role||'—'}</td>
+      <td>
+        <button class="btn" style="font-size:12px;padding:4px 8px" onclick="openEdit('${s.id}')">✏️ Modifier</button>
+        <button class="btn danger" style="font-size:12px;padding:4px 8px;margin-left:4px" onclick="delStaff('${s.id}')">🗑</button>
+      </td>
+    </tr>`).join('');
+
+  el.innerHTML=`
+    <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+      <button class="btn primary" onclick="openAdd()">+ Ajouter un membre</button>
+    </div>
+    <table class="staff-table">
+      <thead><tr><th>Nom</th><th>Contrat</th><th>Poste</th><th>Actions</th></tr></thead>
+      <tbody>${rows||'<tr><td colspan="4" style="text-align:center;color:#999;padding:2rem">Aucun membre</td></tr>'}</tbody>
+    </table>`;
+}
+
+function openAdd() {
+  document.getElementById('modal-container').innerHTML=`
+    <div class="modal-bg" onclick="closeMBg(event)">
+      <div class="modal">
+        <h2>Ajouter un membre</h2>
+        <div class="field"><label>Nom</label><input type="text" id="f-name" placeholder="Ex : Antonin"></div>
+        <div class="row2">
+          <div class="field"><label>Heures contrat / semaine</label><input type="number" id="f-contract" value="35" step="0.5"></div>
+          <div class="field"><label>Poste</label><input type="text" id="f-role" placeholder="Ex : Barman"></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn" onclick="closeModal()">Annuler</button>
+          <button class="btn primary" onclick="saveAdd()">Ajouter</button>
+        </div>
+      </div>
+    </div>`;
+  setTimeout(()=>document.getElementById('f-name').focus(),50);
+}
+
+function saveAdd() {
+  const name=document.getElementById('f-name').value.trim();
+  if(!name) return;
+  state.staff.push({id:Date.now().toString(),name,contract:parseFloat(document.getElementById('f-contract').value)||35,role:document.getElementById('f-role').value.trim(),soldeInit:0});
+  save(); closeModal(); renderStaff(); toast(`${name} ajouté`);
+}
+
+function openEdit(sid) {
+  const s=state.staff.find(x=>x.id===sid); if(!s) return;
+  document.getElementById('modal-container').innerHTML=`
+    <div class="modal-bg" onclick="closeMBg(event)">
+      <div class="modal">
+        <h2>Modifier — ${s.name}</h2>
+        <div class="field"><label>Nom</label><input type="text" id="f-name" value="${s.name}"></div>
+        <div class="row2">
+          <div class="field"><label>Heures contrat / semaine</label><input type="number" id="f-contract" value="${s.contract}" step="0.5"></div>
+          <div class="field"><label>Poste</label><input type="text" id="f-role" value="${s.role||''}"></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn" onclick="closeModal()">Annuler</button>
+          <button class="btn primary" onclick="saveEdit('${sid}')">Enregistrer</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function saveEdit(sid) {
+  const s=state.staff.find(x=>x.id===sid); if(!s) return;
+  s.name=document.getElementById('f-name').value.trim()||s.name;
+  s.contract=parseFloat(document.getElementById('f-contract').value)||s.contract;
+  s.role=document.getElementById('f-role').value.trim();
+  save(); closeModal(); renderStaff(); toast('Modifié');
+}
+
+function delStaff(sid) {
+  const s=state.staff.find(x=>x.id===sid);
+  if(!confirm(`Supprimer ${s?.name} ?`)) return;
+  state.staff=state.staff.filter(x=>x.id!==sid); save(); renderStaff();
+}
+
+// ── NAVIGATION ────────────────────────────────
+function showTab(name) {
+  ['planning','soldes','staff'].forEach(t=>{
+    document.getElementById('view-'+t).style.display=t===name?'':'none';
+    document.getElementById('tab-'+t).classList.toggle('active',t===name);
+  });
+  if(name==='planning') renderPlanning();
+  if(name==='soldes') renderSoldes();
+  if(name==='staff') renderStaff();
+}
+
+function closeModal() { document.getElementById('modal-container').innerHTML=''; }
+function closeMBg(e) { if(e.target.classList.contains('modal-bg')) closeModal(); }
+
+// ── INIT ──────────────────────────────────────
+load();
+if(!state.staff.length) {
+  state.staff=[
+    {id:'1',name:'Antonin',contract:35,role:'Manager',soldeInit:0},
+    {id:'2',name:'Patryk',contract:35,role:'Barman',soldeInit:0},
+    {id:'3',name:'Sharon',contract:35,role:'Barman',soldeInit:0},
+    {id:'4',name:'Sory',contract:35,role:'Extra',soldeInit:0},
+    {id:'5',name:'Alex',contract:35,role:'',soldeInit:0},
+    {id:'6',name:'Jonas',contract:35,role:'',soldeInit:0},
+    {id:'7',name:'Eric',contract:35,role:'',soldeInit:0},
+  ];
+  save();
+}
+renderPlanning();
+</script>
+</body>
+</html>
