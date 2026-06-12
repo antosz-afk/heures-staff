@@ -119,22 +119,40 @@ let state = { staff: [], weeks: {}, currentWeek: getWeekKey(new Date()) };
 
 function getWeekKey(d) {
   const dt = new Date(d);
-  dt.setHours(12, 0, 0, 0);
+  dt.setHours(12,0,0,0);
   const day = dt.getDay();
   const diff = dt.getDate() - day + (day === 0 ? -6 : 1);
   dt.setDate(diff);
-  return dt.toISOString().slice(0, 10);
+  const y = dt.getFullYear();
+  const m = String(dt.getMonth()+1).padStart(2,'0');
+  const dd = String(dt.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
+}
+
+function getDayDate(weekKey, i) {
+  const [y,m,d] = weekKey.split('-').map(Number);
+  const dt = new Date(y,m-1,d+i,12);
+  return `${dt.getDate()}/${dt.getMonth()+1}`;
+}
+
+function fmtH(h) {
+  if (!h || h <= 0) return '—';
+  const hrs = Math.floor(h);
+  const mins = Math.round((h - hrs) * 60);
+  if (mins === 0) return `${hrs}h`;
+  return `${hrs}h${String(mins).padStart(2,'0')}`;
 }
 
 function weekLabel(key) {
-  const mon = new Date(key);
-  const sun = new Date(key); sun.setDate(sun.getDate()+6);
-  const f = d => d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});
+  const [y,m,d] = key.split('-').map(Number);
+  const mon = new Date(y,m-1,d,12);
+  const sun = new Date(y,m-1,d+6,12);
+  const f = dt => `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}`;
   return `${f(mon)} – ${f(sun)}`;
 }
 
-function prevWeek(k){ const d=new Date(k); d.setDate(d.getDate()-7); return getWeekKey(d); }
-function nextWeek(k){ const d=new Date(k); d.setDate(d.getDate()+7); return getWeekKey(d); }
+function prevWeek(k){ const [y,m,d]=k.split('-').map(Number); return getWeekKey(new Date(y,m-1,d-7,12)); }
+function nextWeek(k){ const [y,m,d]=k.split('-').map(Number); return getWeekKey(new Date(y,m-1,d+7,12)); }
 
 function parseHours(s) {
   if (!s||!s.trim()||s.toLowerCase()==='repos'||s==='-') return null;
@@ -147,7 +165,7 @@ function parseHours(s) {
   };
   let start = toMin(parts[0]), end = toMin(parts[1]);
   if (end < start) end += 1440;
-const h = (end-start)/60;
+  const h = (end-start)/60;
   return h > 0.5 ? h - 0.5 : null;
 }
 
@@ -184,10 +202,7 @@ function renderPlanning() {
   const el = document.getElementById('view-planning');
   const wk = state.currentWeek;
 
-  const getDayLabel = i => {
-    const d = new Date(wk + 'T12:00:00'); d.setDate(d.getDate()+i);
-    return `${DAYS[i]}<br><span style="font-weight:400;color:#aaa;font-size:10px">${d.getDate()}/${d.getMonth()+1}</span>`;
-  };
+  const getDayLabel = i => `${DAYS[i]}<br><span style="font-weight:400;color:#aaa;font-size:10px">${getDayDate(wk,i)}</span>`;
 
   let rows = '';
   for (const s of state.staff) {
@@ -200,13 +215,13 @@ function renderPlanning() {
     }
     const total = calcWeek(s.id, wk);
     const diff = Math.round((total-s.contract)*100)/100;
-    const dStr = diff>0?`+${diff.toFixed(1)}h`:diff<0?`${diff.toFixed(1)}h`:'—';
+    const dStr = diff>0?`+${fmtH(diff)}`:diff<0?`-${fmtH(Math.abs(diff))}`:'—';
     const dCls = diff>0?'pos':diff<0?'neg':'neu';
     rows += `<div class="staff-row">
       <div class="staff-info"><div class="staff-name">${s.name}</div><div class="staff-contract">${s.contract}h/sem</div></div>
       ${cells}
       <div class="total-cell">
-        <div class="total-h">${total>0?total.toFixed(1)+'h':'—'}</div>
+        <div class="total-h">${total>0?fmtH(total):'—'}</div>
         <div class="diff-badge diff-${dCls}">${dStr}</div>
       </div>
     </div>`;
@@ -237,10 +252,10 @@ function onTimeChange(input) {
   const s=state.staff.find(x=>x.id===sid); if(!s) return;
   const total=calcWeek(sid,state.currentWeek);
   const diff=Math.round((total-s.contract)*100)/100;
-  const dStr=diff>0?`+${diff.toFixed(1)}h`:diff<0?`${diff.toFixed(1)}h`:'—';
+  const dStr=diff>0?`+${fmtH(diff)}`:diff<0?`-${fmtH(Math.abs(diff))}`:'—';
   const dCls=diff>0?'pos':diff<0?'neg':'neu';
   const row=input.closest('.staff-row');
-  if(row){ const tc=row.querySelector('.total-cell'); tc.innerHTML=`<div class="total-h">${total>0?total.toFixed(1)+'h':'—'}</div><div class="diff-badge diff-${dCls}">${dStr}</div>`; }
+  if(row){ const tc=row.querySelector('.total-cell'); tc.innerHTML=`<div class="total-h">${total>0?fmtH(total):'—'}</div><div class="diff-badge diff-${dCls}">${dStr}</div>`; }
 }
 
 function changeWeek(dir) { state.currentWeek=dir<0?prevWeek(state.currentWeek):nextWeek(state.currentWeek); renderPlanning(); }
@@ -301,10 +316,10 @@ async function processFile(file) {
       } else { ko.push(nom); }
     }
 
-    save(); state.currentWeek=wk;
+    save();
     st.className='import-status success';
-    st.innerHTML=`✅ ${ok.length} employé(s) importé(s) : ${ok.join(', ')}.${ko.length?`<br>⚠️ Non reconnus : ${ko.join(', ')} — vérifiez les noms dans Équipe.`:''}<br><small style="opacity:0.8">Semaine : ${weekLabel(wk)}</small>`;
-    setTimeout(()=>{ closeModal(); showTab('planning'); }, 3500);
+    st.innerHTML=`✅ ${ok.length} employé(s) importé(s) : ${ok.join(', ')}.${ko.length?`<br>⚠️ Non reconnus : ${ko.join(', ')}`:''}<br><small style="opacity:0.8">Semaine : ${weekLabel(wk)}</small>`;
+    setTimeout(()=>{ closeModal(); renderPlanning(); }, 3000);
 
   } catch(e) {
     st.className='import-status error';
@@ -323,7 +338,7 @@ function renderSoldes() {
 
   const items=state.staff.map(s=>{
     const sol=calcSolde(s.id);
-    const str=sol>0?`+${sol.toFixed(1)}h`:sol===0?'0h':`${sol.toFixed(1)}h`;
+    const str=sol>0?`+${fmtH(sol)}`:sol===0?'0h':`-${fmtH(Math.abs(sol))}`;
     const bg=sol>0?'#e8f5ee':sol<0?'#fdecea':'#f0ede8';
     const fc=sol>0?'#1a7a4a':sol<0?'#c0392b':'#999';
     return `<div class="solde-item">
