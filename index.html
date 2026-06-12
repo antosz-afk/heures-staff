@@ -288,7 +288,7 @@ async function processFile(file) {
     }
 
     const parsed = await resp.json();
-    const wk = getWeekKey(new Date(parsed.weekStart + 'T12:00:00'));
+    const wk = state.currentWeek;
     if (!state.weeks[wk]) state.weeks[wk]={};
 
     let ok=[], ko=[];
