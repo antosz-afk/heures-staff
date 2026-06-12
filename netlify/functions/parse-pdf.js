@@ -50,6 +50,7 @@ exports.handler = async function(event) {
     if (data.error) return { statusCode: 400, body: JSON.stringify({ error: data.error.message }) };
 
     const text = data.content.map(i => i.text || '').join('').replace(/```json|```/g, '').trim();
+    console.log('Réponse IA:', text);
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
