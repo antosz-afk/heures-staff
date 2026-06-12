@@ -185,7 +185,7 @@ function renderPlanning() {
   const wk = state.currentWeek;
 
   const getDayLabel = i => {
-    const d = new Date(wk); d.setDate(d.getDate()+i);
+    const d = new Date(wk + 'T12:00:00'); d.setDate(d.getDate()+i);
     return `${DAYS[i]}<br><span style="font-weight:400;color:#aaa;font-size:10px">${d.getDate()}/${d.getMonth()+1}</span>`;
   };
 
