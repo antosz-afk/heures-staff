@@ -275,7 +275,7 @@ async function processFile(file) {
     st.textContent='🤖 Analyse IA en cours…';
 
     const names = state.staff.map(s=>s.name).join(', ');
-    const resp = await fetch('/api/parse-pdf', {
+    const resp = await fetch('/.netlify/functions/parse-pdf', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ pdfBase64: b64, staffNames: names })
