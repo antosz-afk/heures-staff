@@ -20,7 +20,11 @@ exports.handler = async function(event) {
         role: 'user',
         content: [
           { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdfBase64 } },
-          { type: 'text', text: `Planning hebdomadaire. Membres connus: ${staffNames || 'inconnus'}.\nRetourne UNIQUEMENT un JSON valide (sans markdown ni backticks):\n{"weekStart":"YYYY-MM-DD","schedule":{"Prenom":{"0":"HH:MM-HH:MM","1":"Repos",...}}}\n0=lundi, 6=dimanche. Format horaires HH:MM-HH:MM. Mets "Repos" si absent ou vide.` }
+          { type: 'text', text: `Planning hebdomadaire. Membres connus: ${staffNames || 'inconnus'}.
+Retourne UNIQUEMENT un JSON valide (sans markdown ni backticks):
+{"weekStart":"YYYY-MM-DD","schedule":{"Prenom":{"0":"HH:MM-HH:MM","1":"Repos",...}}}
+weekStart doit être le LUNDI de la semaine (ex: si planning du 8 au 14 juin, weekStart = "2025-06-09").
+0=lundi, 6=dimanche. Format horaires HH:MM-HH:MM. Mets "Repos" si absent ou vide.` }
         ]
       }]
     });
