@@ -147,8 +147,8 @@ function parseHours(s) {
   };
   let start = toMin(parts[0]), end = toMin(parts[1]);
   if (end < start) end += 1440;
-  const h = (end-start)/60;
-  return h > 0 ? h : null;
+const h = (end-start)/60;
+  return h > 0.5 ? h - 0.5 : null;
 }
 
 function calcWeek(staffId, weekKey) {
