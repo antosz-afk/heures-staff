@@ -15,7 +15,7 @@
   .tab:hover{color:#1a1a1a}
   .tab.active{color:#1a1a1a;font-weight:500;border-bottom-color:#1a1a1a}
   .main{padding:1.5rem;max-width:1020px;margin:0 auto}
-  .week-bar{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;flex-wrap:wrap}
+  .week-bar{display:flex;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
   .week-label{font-size:14px;font-weight:500;min-width:170px;text-align:center}
   .btn{padding:7px 14px;border:1px solid #d4d2cc;border-radius:8px;font-size:13px;cursor:pointer;background:#fff;color:#1a1a1a;display:inline-flex;align-items:center;gap:6px;transition:background 0.1s}
   .btn:hover{background:#f5f4f0}
@@ -23,6 +23,12 @@
   .btn.primary:hover{background:#333}
   .btn.danger{color:#c0392b;border-color:#e8b4b0}
   .btn.danger:hover{background:#fdf0ef}
+  .heures-sup-banner{background:#1a1a1a;color:#fff;border-radius:10px;padding:10px 16px;margin-bottom:1rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .heures-sup-item{display:flex;flex-direction:column;align-items:center;min-width:70px}
+  .heures-sup-label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.04em}
+  .heures-sup-val{font-size:14px;font-weight:600}
+  .heures-sup-val.pos{color:#4caf8a}
+  .heures-sup-val.neg{color:#ef9a9a}
   .planning-grid{background:#fff;border:1px solid #e8e6e0;border-radius:12px;overflow:hidden}
   .grid-header{display:grid;grid-template-columns:140px repeat(7,1fr) 90px;background:#f5f4f0;border-bottom:1px solid #e8e6e0}
   .grid-header div{padding:8px 4px;font-size:11px;font-weight:600;color:#666;text-align:center;text-transform:uppercase;letter-spacing:0.04em}
@@ -38,6 +44,9 @@
   .time-input:hover{border-color:#d4d2cc;background:#fff}
   .time-input:focus{outline:none;border-color:#1a1a1a;background:#fff}
   .time-input.repos{color:#ccc}
+  .time-input.cp{background:#e8f5ee;color:#1a7a4a;font-weight:600;font-size:10px}
+  .time-input.maladie{background:#fff3e0;color:#e65100;font-weight:600;font-size:10px}
+  .time-input.absence{background:#fdecea;color:#c0392b;font-weight:600;font-size:10px}
   .total-cell{padding:8px 12px;text-align:right}
   .total-h{font-size:13px;font-weight:500}
   .diff-badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:20px;margin-top:3px}
@@ -78,30 +87,45 @@
   .import-status.loading{background:#f5f4f0;color:#666;display:block}
   .import-status.success{background:#e8f5ee;color:#1a7a4a;display:block}
   .import-status.error{background:#fdecea;color:#c0392b;display:block}
+  .legende{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem;font-size:12px}
+  .legende-item{display:flex;align-items:center;gap:4px}
+  .legende-dot{width:10px;height:10px;border-radius:50%}
   .empty{text-align:center;padding:3rem;color:#999;font-size:13px}
   .empty-icon{font-size:40px;margin-bottom:10px}
   .toast{position:fixed;bottom:20px;right:20px;background:#1a1a1a;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:300;opacity:0;transition:opacity 0.2s;pointer-events:none}
   .toast.show{opacity:1}
-  @media(max-width:650px){
+  /* Mobile */
+  @media(max-width:750px){
     .planning-grid{display:none}
-    .mobile-planning{display:block!important}
-    .week-bar{gap:6px}
-    .week-label{font-size:13px;min-width:140px}
+    .mobile-planning{display:block}
+    .week-label{min-width:0;font-size:13px}
   }
-  @media(min-width:651px){
+  @media(min-width:751px){
     .mobile-planning{display:none}
   }
-  .mobile-planning{display:none}
-  .mobile-card{background:#fff;border:1px solid #e8e6e0;border-radius:12px;margin-bottom:10px;overflow:hidden}
-  .mobile-card-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f5f4f0;border-bottom:1px solid #e8e6e0}
-  .mobile-card-name{font-size:14px;font-weight:500}
-  .mobile-card-total{text-align:right}
-  .mobile-day-row{display:grid;grid-template-columns:80px 1fr;align-items:center;padding:6px 14px;border-bottom:1px solid #f5f4f0}
+  .mobile-planning{background:#fff;border:1px solid #e8e6e0;border-radius:12px;overflow:hidden}
+  .mobile-staff-card{border-bottom:1px solid #f0ede8}
+  .mobile-staff-card:last-child{border-bottom:none}
+  .mobile-staff-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer}
+  .mobile-staff-header:active{background:#f5f4f0}
+  .mobile-days{background:#fafaf8;padding:8px 16px 12px;display:none}
+  .mobile-day-row{display:flex;align-items:center;padding:5px 0;border-bottom:0.5px solid #f0ede8;gap:8px}
   .mobile-day-row:last-child{border-bottom:none}
-  .mobile-day-label{font-size:12px;color:#999}
-  .mobile-time-input{width:100%;padding:5px 8px;border:1px solid transparent;border-radius:6px;font-size:12px;background:transparent;color:#1a1a1a}
-  .mobile-time-input:focus{outline:none;border-color:#1a1a1a;background:#fff}
-  .mobile-time-input.repos{color:#ccc}
+  .mobile-day-label{font-size:12px;color:#999;width:70px;flex-shrink:0}
+  .mobile-day-input{flex:1;padding:5px 8px;border:1px solid #d4d2cc;border-radius:6px;font-size:12px;text-align:center;background:#fff;color:#1a1a1a}
+  .mobile-day-input:focus{outline:none;border-color:#1a1a1a}
+  .mobile-day-input.repos{color:#ccc;border-color:transparent;background:transparent}
+  .mobile-day-input.cp{background:#e8f5ee;color:#1a7a4a;font-weight:600;border-color:#a8d5b5}
+  .mobile-day-input.maladie{background:#fff3e0;color:#e65100;font-weight:600;border-color:#ffcc80}
+  .mobile-day-input.absence{background:#fdecea;color:#c0392b;font-weight:600;border-color:#f1a9a0}
+  /* Print */
+  @media print{
+    .topbar,.nav,.week-bar,.heures-sup-banner,.modal-bg,.toast,.legende{display:none!important}
+    .mobile-planning{display:none!important}
+    .planning-grid{display:block!important}
+    body{background:#fff}
+    .main{padding:0}
+  }
 </style>
 </head>
 <body>
@@ -128,7 +152,6 @@
 
 <script>
 const DAYS = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
-const STORAGE_KEY = 'lepanbar_hrs_v1';
 
 let state = { staff: [], weeks: {}, currentWeek: getWeekKey(new Date()) };
 
@@ -169,8 +192,20 @@ function weekLabel(key) {
 function prevWeek(k){ const [y,m,d]=k.split('-').map(Number); return getWeekKey(new Date(y,m-1,d-7,12)); }
 function nextWeek(k){ const [y,m,d]=k.split('-').map(Number); return getWeekKey(new Date(y,m-1,d+7,12)); }
 
+function getType(val) {
+  if (!val) return 'repos';
+  const v = val.toLowerCase().trim();
+  if (v === 'cp') return 'cp';
+  if (v === 'maladie') return 'maladie';
+  if (v === 'absence') return 'absence';
+  if (v === 'repos' || v === '-' || v === '') return 'repos';
+  return 'normal';
+}
+
 function parseHours(s) {
-  if (!s||!s.trim()||s.toLowerCase()==='repos'||s==='-') return null;
+  if (!s||!s.trim()) return null;
+  const type = getType(s);
+  if (type !== 'normal') return null;
   const parts = s.trim().split(/[-–]/);
   if (parts.length < 2) return null;
   const toMin = t => {
@@ -184,10 +219,25 @@ function parseHours(s) {
   return h > 0.5 ? h - 0.5 : null;
 }
 
+function dailyContract(s) {
+  return Math.round((s.contract / 5) * 100) / 100;
+}
+
 function calcWeek(staffId, weekKey) {
+  const s = state.staff.find(x=>x.id===staffId);
+  if (!s) return 0;
   const w = ((state.weeks[weekKey]||{})[staffId])||{};
   let t = 0;
-  for (let i=0;i<7;i++) { const h=parseHours(w[i]||''); if(h) t+=h; }
+  for (let i=0;i<7;i++) {
+    const type = getType(w[i]||'');
+    if (type === 'cp' || type === 'maladie') {
+      t += dailyContract(s); // neutre sur le solde
+    } else if (type === 'normal') {
+      const h = parseHours(w[i]||'');
+      if (h) t += h;
+    }
+    // repos et absence : 0h
+  }
   return Math.round(t*100)/100;
 }
 
@@ -235,19 +285,35 @@ function renderPlanning() {
 
   const getDayLabel = i => `${DAYS[i]}<br><span style="font-weight:400;color:#aaa;font-size:10px">${getDayDate(wk,i)}</span>`;
 
-  let rows = '';
+  let rows = '', mobileRows = '';
+
   for (const s of state.staff) {
     const w = ((state.weeks[wk]||{})[s.id])||{};
-    let cells = '';
+    let cells = '', dayRows = '';
+
     for (let i=0;i<7;i++) {
       const val = w[i]||'';
-      const isR = !val||val.toLowerCase()==='repos';
-      cells += `<div class="time-cell"><input class="time-input${isR?' repos':''}" data-sid="${s.id}" data-day="${i}" value="${val}" placeholder="Repos" onchange="onTimeChange(this)" oninput="this.classList.toggle('repos',!this.value||this.value.toLowerCase()==='repos')"></div>`;
+      const type = getType(val);
+      const displayVal = type === 'repos' ? '' : val.toUpperCase() === val ? val : val;
+      const inputClass = type === 'repos' ? 'repos' : type === 'normal' ? '' : type;
+
+      // Desktop
+      cells += `<div class="time-cell"><input class="time-input ${inputClass}" data-sid="${s.id}" data-day="${i}" value="${val}" placeholder="Repos" onchange="onTimeChange(this)" oninput="updateInputClass(this)"></div>`;
+
+      // Mobile
+      const h = parseHours(val);
+      dayRows += `<div class="mobile-day-row">
+        <span class="mobile-day-label">${DAYS[i]} ${getDayDate(wk,i)}</span>
+        <input class="mobile-day-input ${inputClass}" data-sid="${s.id}" data-day="${i}" value="${val}" placeholder="Repos" onchange="onTimeChange(this)" oninput="updateInputClass(this)">
+        <span style="font-size:11px;color:#999;width:36px;text-align:right">${h?fmtH(h):type==='cp'?'CP':type==='maladie'?'Mal':type==='absence'?'Abs':''}</span>
+      </div>`;
     }
+
     const total = calcWeek(s.id, wk);
     const diff = Math.round((total-s.contract)*100)/100;
     const dStr = diff>0?`+${fmtH(diff)}`:diff<0?`-${fmtH(Math.abs(diff))}`:'—';
     const dCls = diff>0?'pos':diff<0?'neg':'neu';
+
     rows += `<div class="staff-row">
       <div class="staff-info"><div class="staff-name">${s.name}</div><div class="staff-contract">${s.contract}h/sem</div></div>
       ${cells}
@@ -256,7 +322,26 @@ function renderPlanning() {
         <div class="diff-badge diff-${dCls}">${dStr}</div>
       </div>
     </div>`;
+
+    mobileRows += `<div class="mobile-staff-card">
+      <div class="mobile-staff-header" onclick="toggleMobileCard(this)">
+        <div><div class="staff-name">${s.name}</div><div class="staff-contract">${s.contract}h/sem</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:13px;font-weight:500">${total>0?fmtH(total):'—'}</span>
+          <span class="diff-badge diff-${dCls}">${dStr}</span>
+        </div>
+      </div>
+      <div class="mobile-days">${dayRows}</div>
+    </div>`;
   }
+
+  // Soldes banner
+  const supItems = state.staff.map(s => {
+    const sol = calcSolde(s.id);
+    const cls = sol > 0 ? 'pos' : sol < 0 ? 'neg' : '';
+    const str = sol > 0 ? `+${fmtH(sol)}` : sol < 0 ? `-${fmtH(Math.abs(sol))}` : '0h';
+    return `<div class="heures-sup-item"><span class="heures-sup-label">${s.name}</span><span class="heures-sup-val ${cls}">${str}</span></div>`;
+  }).join('');
 
   const headerCells = DAYS.map((_,i)=>`<div>${getDayLabel(i)}</div>`).join('');
 
@@ -266,53 +351,31 @@ function renderPlanning() {
       <span class="week-label">Semaine du ${weekLabel(wk)}</span>
       <button class="btn" onclick="changeWeek(1)">&#8594;</button>
       <button class="btn" onclick="goToday()">Aujourd'hui</button>
+      <button class="btn" onclick="window.print()">🖨️</button>
       <button class="btn primary" onclick="openImport()" style="margin-left:auto">&#8679; Importer PDF</button>
+    </div>
+    ${state.staff.length>0&&supItems?`<div class="heures-sup-banner"><span style="font-size:11px;color:#666;margin-right:4px">Soldes :</span>${supItems}</div>`:''}
+    <div class="legende">
+      <span class="legende-item"><span class="legende-dot" style="background:#e8f5ee;border:1px solid #a8d5b5"></span> CP (neutre)</span>
+      <span class="legende-item"><span class="legende-dot" style="background:#fff3e0;border:1px solid #ffcc80"></span> Maladie (neutre)</span>
+      <span class="legende-item"><span class="legende-dot" style="background:#fdecea;border:1px solid #f1a9a0"></span> Absence (décompté)</span>
     </div>
     ${state.staff.length===0
       ? `<div class="empty"><div class="empty-icon">👥</div>Ajoutez des membres dans l'onglet <strong>Équipe</strong></div>`
-      : `<div class="planning-grid"><div class="grid-header"><div>Employé</div>${headerCells}<div style="text-align:right;padding-right:12px">Total</div></div>${rows}</div>`
-    }
-    <div id="mobile-planning"></div>`;
-  renderMobilePlanning();
+      : `<div class="planning-grid"><div class="grid-header"><div>Employé</div>${headerCells}<div style="text-align:right;padding-right:12px">Total</div></div>${rows}</div>
+         <div class="mobile-planning">${mobileRows}</div>`
+    }`;
 }
 
-function renderMobilePlanning() {
-  const el = document.getElementById('mobile-planning');
-  if (!el) return;
-  const wk = state.currentWeek;
-  if (state.staff.length === 0) { el.innerHTML = ''; return; }
-  
-  let html = '';
-  for (const s of state.staff) {
-    const w = ((state.weeks[wk]||{})[s.id])||{};
-    const total = calcWeek(s.id, wk);
-    const diff = Math.round((total-s.contract)*100)/100;
-    const dStr = diff>0?`+${fmtH(diff)}`:diff<0?`-${fmtH(Math.abs(diff))}`:'—';
-    const dCls = diff>0?'pos':diff<0?'neg':'neu';
-    
-    let dayRows = '';
-    for (let i=0;i<7;i++) {
-      const val = w[i]||'';
-      const isR = !val||val.toLowerCase()==='repos';
-      const dayDate = getDayDate(wk,i);
-      dayRows += `<div class="mobile-day-row">
-        <span class="mobile-day-label">${DAYS[i]} ${dayDate}</span>
-        <input class="mobile-time-input${isR?' repos':''}" data-sid="${s.id}" data-day="${i}" value="${val}" placeholder="Repos" onchange="onTimeChange(this)" oninput="this.classList.toggle('repos',!this.value||this.value.toLowerCase()==='repos')">
-      </div>`;
-    }
-    
-    html += `<div class="mobile-card">
-      <div class="mobile-card-header">
-        <div><div class="mobile-card-name">${s.name}</div><div style="font-size:11px;color:#999">${s.contract}h/sem</div></div>
-        <div class="mobile-card-total">
-          <div style="font-size:14px;font-weight:500">${total>0?fmtH(total):'—'}</div>
-          <div class="diff-badge diff-${dCls}">${dStr}</div>
-        </div>
-      </div>
-      ${dayRows}
-    </div>`;
-  }
-  el.innerHTML = html;
+function updateInputClass(input) {
+  const type = getType(input.value);
+  input.className = input.className.replace(/\b(repos|cp|maladie|absence)\b/g,'').trim();
+  if (type !== 'normal') input.classList.add(type === 'repos' ? 'repos' : type);
+}
+
+function toggleMobileCard(header) {
+  const days = header.nextElementSibling;
+  days.style.display = days.style.display === 'block' ? 'none' : 'block';
 }
 
 function onTimeChange(input) {
@@ -328,19 +391,20 @@ function onTimeChange(input) {
   const dCls=diff>0?'pos':diff<0?'neg':'neu';
   const row=input.closest('.staff-row');
   if(row){ const tc=row.querySelector('.total-cell'); tc.innerHTML=`<div class="total-h">${total>0?fmtH(total):'—'}</div><div class="diff-badge diff-${dCls}">${dStr}</div>`; }
-  renderMobilePlanning();
+  const mrow=input.closest('.mobile-staff-card');
+  if(mrow){ const right=mrow.querySelector('.mobile-staff-header>div:last-child'); right.innerHTML=`<span style="font-size:13px;font-weight:500">${total>0?fmtH(total):'—'}</span><span class="diff-badge diff-${dCls}">${dStr}</span>`; }
 }
 
 function changeWeek(dir) { state.currentWeek=dir<0?prevWeek(state.currentWeek):nextWeek(state.currentWeek); renderPlanning(); }
 function goToday() { state.currentWeek=getWeekKey(new Date()); renderPlanning(); }
 
-// ── IMPORT PDF (via Netlify Function) ─────────
+// ── IMPORT PDF ────────────────────────────────
 function openImport() {
   document.getElementById('modal-container').innerHTML = `
     <div class="modal-bg" onclick="closeMBg(event)">
       <div class="modal">
         <h2>Importer un planning PDF</h2>
-        <p style="font-size:13px;color:#666;margin-bottom:1rem">L'IA extrait automatiquement les horaires de chaque employé.</p>
+        <p style="font-size:13px;color:#666;margin-bottom:1rem">L'IA extrait les horaires, congés et arrêts maladie automatiquement. Le planning sera importé sur la semaine affichée.</p>
         <div class="upload-zone" onclick="document.getElementById('pdf-in').click()" ondragover="event.preventDefault()" ondrop="onDrop(event)">
           <div class="upload-icon">📄</div>
           Cliquez ou déposez votre PDF ici
@@ -358,27 +422,19 @@ function onFileSelect(i) { const f=i.files[0]; if(f) processFile(f); }
 async function processFile(file) {
   const st=document.getElementById('imp-status');
   st.className='import-status loading'; st.textContent='⏳ Lecture du PDF…';
-
   try {
     const b64 = await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result.split(',')[1]); r.onerror=()=>rej(new Error('Lecture impossible')); r.readAsDataURL(file); });
     st.textContent='🤖 Analyse IA en cours…';
-
     const names = state.staff.map(s=>s.name).join(', ');
     const resp = await fetch('/.netlify/functions/parse-pdf', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ pdfBase64: b64, staffNames: names })
     });
-
-    if (!resp.ok) {
-      const err = await resp.json().catch(()=>({error:'Erreur serveur'}));
-      throw new Error(err.error || 'Erreur serveur');
-    }
-
+    if (!resp.ok) { const err=await resp.json().catch(()=>({error:'Erreur serveur'})); throw new Error(err.error||'Erreur serveur'); }
     const parsed = await resp.json();
     const wk = state.currentWeek;
     if (!state.weeks[wk]) state.weeks[wk]={};
-
     let ok=[], ko=[];
     for(const [nom,days] of Object.entries(parsed.schedule)) {
       const found=state.staff.find(s=>s.name.toLowerCase().includes(nom.toLowerCase())||nom.toLowerCase().includes(s.name.toLowerCase()));
@@ -388,12 +444,10 @@ async function processFile(file) {
         ok.push(found.name);
       } else { ko.push(nom); }
     }
-
-    save();
+    await save();
     st.className='import-status success';
-    st.innerHTML=`✅ ${ok.length} employé(s) importé(s) : ${ok.join(', ')}.${ko.length?`<br>⚠️ Non reconnus : ${ko.join(', ')}`:''}<br><small style="opacity:0.8">Semaine : ${weekLabel(wk)}</small>`;
+    st.innerHTML=`✅ ${ok.length} employé(s) importé(s) : ${ok.join(', ')}.${ko.length?`<br>⚠️ Non reconnus : ${ko.join(', ')}`:''}<br><small>Semaine : ${weekLabel(wk)}</small>`;
     setTimeout(()=>{ closeModal(); renderPlanning(); }, 3000);
-
   } catch(e) {
     st.className='import-status error';
     st.textContent=`❌ Erreur : ${e.message}`;
@@ -404,11 +458,9 @@ async function processFile(file) {
 function renderSoldes() {
   const el=document.getElementById('view-soldes');
   if(!state.staff.length){ el.innerHTML=`<div class="empty"><div class="empty-icon">📊</div>Aucun membre dans l'équipe</div>`; return; }
-
   const wks=Object.keys(state.weeks).length;
   const pos=state.staff.filter(s=>calcSolde(s.id)>0).length;
   const neg=state.staff.filter(s=>calcSolde(s.id)<0).length;
-
   const items=state.staff.map(s=>{
     const sol=calcSolde(s.id);
     const str=sol>0?`+${fmtH(sol)}`:sol===0?'0h':`-${fmtH(Math.abs(sol))}`;
@@ -422,7 +474,6 @@ function renderSoldes() {
       </div>
     </div>`;
   }).join('');
-
   el.innerHTML=`
     <div class="cards">
       <div class="card"><div class="card-label">Semaines suivies</div><div class="card-val">${wks}</div></div>
@@ -438,8 +489,8 @@ function openAjust(sid) {
     <div class="modal-bg" onclick="closeMBg(event)">
       <div class="modal">
         <h2>Ajuster le solde — ${s.name}</h2>
-        <p style="font-size:13px;color:#666;margin-bottom:1rem">Solde actuel : <strong>${calcSolde(sid).toFixed(1)}h</strong>.<br>Le solde initial permet de reprendre un historique existant.</p>
-        <div class="field"><label>Solde initial (heures)</label><input type="number" step="0.5" id="adj-v" value="${s.soldeInit||0}"></div>
+        <p style="font-size:13px;color:#666;margin-bottom:1rem">Solde actuel : <strong>${fmtH(Math.abs(calcSolde(sid)))}</strong>.<br>Le solde initial permet de reprendre un historique existant.</p>
+        <div class="field"><label>Solde initial (heures, ex: -2.5)</label><input type="number" step="0.5" id="adj-v" value="${s.soldeInit||0}"></div>
         <div class="modal-actions">
           <button class="btn" onclick="closeModal()">Annuler</button>
           <button class="btn primary" onclick="saveAjust('${sid}')">Enregistrer</button>
@@ -467,7 +518,6 @@ function renderStaff() {
         <button class="btn danger" style="font-size:12px;padding:4px 8px;margin-left:4px" onclick="delStaff('${s.id}')">🗑</button>
       </td>
     </tr>`).join('');
-
   el.innerHTML=`
     <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
       <button class="btn primary" onclick="openAdd()">+ Ajouter un membre</button>
@@ -537,7 +587,6 @@ function delStaff(sid) {
   state.staff=state.staff.filter(x=>x.id!==sid); save(); renderStaff();
 }
 
-// ── NAVIGATION ────────────────────────────────
 function showTab(name) {
   ['planning','soldes','staff'].forEach(t=>{
     document.getElementById('view-'+t).style.display=t===name?'':'none';
@@ -551,23 +600,23 @@ function showTab(name) {
 function closeModal() { document.getElementById('modal-container').innerHTML=''; }
 function closeMBg(e) { if(e.target.classList.contains('modal-bg')) closeModal(); }
 
-// ── INIT ──────────────────────────────────────
 async function init() {
   await load();
   if(!state.staff.length) {
-  state.staff=[
-    {id:'1',name:'Antonin',contract:35,role:'Manager',soldeInit:0},
-    {id:'2',name:'Patryk',contract:35,role:'Barman',soldeInit:0},
-    {id:'3',name:'Sharon',contract:35,role:'Barman',soldeInit:0},
-    {id:'4',name:'Sory',contract:35,role:'Extra',soldeInit:0},
-    {id:'5',name:'Alex',contract:35,role:'',soldeInit:0},
-    {id:'6',name:'Jonas',contract:35,role:'',soldeInit:0},
-    {id:'7',name:'Eric',contract:35,role:'',soldeInit:0},
-  ];
-  await save();
+    state.staff=[
+      {id:'1',name:'Antonin',contract:35,role:'Manager',soldeInit:0},
+      {id:'2',name:'Patryk',contract:35,role:'Barman',soldeInit:0},
+      {id:'3',name:'Sharon',contract:35,role:'Barman',soldeInit:0},
+      {id:'4',name:'Sory',contract:35,role:'Extra',soldeInit:0},
+      {id:'5',name:'Alex',contract:35,role:'',soldeInit:0},
+      {id:'6',name:'Jonas',contract:35,role:'',soldeInit:0},
+      {id:'7',name:'Eric',contract:35,role:'',soldeInit:0},
+    ];
+    await save();
   }
   renderPlanning();
 }
+
 init();
 </script>
 </body>
