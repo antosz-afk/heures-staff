@@ -1,34 +1,26 @@
 const https = require('https');
 
-function supabaseRequest(path, method, body) {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_KEY;
-  if (!url || !key) throw new Error('Supabase non configuré');
-
-  const hostname = url.replace('https://', '');
-  const payload = body ? JSON.stringify(body) : null;
-
+function request(hostname, path, method, key, payload) {
   return new Promise((resolve, reject) => {
+    const data = payload ? JSON.stringify(payload) : null;
     const req = https.request({
       hostname,
-      path: `/rest/v1/${path}`,
+      path,
       method,
       headers: {
         'Content-Type': 'application/json',
         'apikey': key,
         'Authorization': `Bearer ${key}`,
-        'Prefer': method === 'POST' ? 'return=representation' : 'return=representation',
-        ...(payload ? { 'Content-Length': Buffer.byteLength(payload) } : {})
+        'Prefer': 'return=minimal',
+        ...(data ? { 'Content-Length': Buffer.byteLength(data) } : {})
       }
     }, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try { resolve(JSON.parse(data)); } catch(e) { resolve(data); }
-      });
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => resolve({ status: res.statusCode, body }));
     });
     req.on('error', reject);
-    if (payload) req.write(payload);
+    if (data) req.write(data);
     req.end();
   });
 }
@@ -43,9 +35,16 @@ exports.handler = async function(event) {
 
   if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
 
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_KEY;
+  if (!url || !key) return { statusCode: 500, headers, body: JSON.stringify({ error: 'Supabase non configuré' }) };
+
+  const hostname = url.replace('https://', '');
+
   try {
     if (event.httpMethod === 'GET') {
-      const rows = await supabaseRequest('app_state?select=data&order=id.desc&limit=1', 'GET');
+      const r = await request(hostname, '/rest/v1/app_state?select=id,data&order=id.desc&limit=1', 'GET', key);
+      const rows = JSON.parse(r.body);
       if (Array.isArray(rows) && rows.length > 0) {
         return { statusCode: 200, headers, body: rows[0].data };
       }
@@ -54,9 +53,14 @@ exports.handler = async function(event) {
 
     if (event.httpMethod === 'POST') {
       const { data } = JSON.parse(event.body);
-      // Upsert: delete all then insert
-      await supabaseRequest('app_state?id=gt.0', 'DELETE', null);
-      await supabaseRequest('app_state', 'POST', { data });
+      const existing = await request(hostname, '/rest/v1/app_state?select=id&limit=1', 'GET', key);
+      const rows = JSON.parse(existing.body);
+      if (Array.isArray(rows) && rows.length > 0) {
+        const id = rows[0].id;
+        await request(hostname, `/rest/v1/app_state?id=eq.${id}`, 'PATCH', key, { data });
+      } else {
+        await request(hostname, '/rest/v1/app_state', 'POST', key, { data });
+      }
       return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
     }
 
