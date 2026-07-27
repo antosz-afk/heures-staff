@@ -23,8 +23,14 @@ exports.handler = async function(event) {
           { type: 'text', text: `Planning hebdomadaire. Membres connus: ${staffNames || 'inconnus'}.
 Retourne UNIQUEMENT un JSON valide (sans markdown ni backticks):
 {"weekStart":"YYYY-MM-DD","schedule":{"Prenom":{"0":"HH:MM-HH:MM","1":"Repos",...}}}
-weekStart doit être le LUNDI de la semaine (ex: si planning du 8 au 14 juin, weekStart = "2025-06-09").
-0=lundi, 6=dimanche. Format horaires HH:MM-HH:MM. Mets "Repos" si absent ou vide.` }
+weekStart doit être le LUNDI de la semaine.
+0=lundi, 6=dimanche.
+Règles de conversion :
+- Horaires normaux → format HH:MM-HH:MM
+- "Congé", "CP", "Congé payé" → "CP"
+- "Arrêt", "Maladie", "Arrêt de travail", "Arrêt maladie" → "Maladie"
+- "Absence", "Absent", "Absence non justifiée" → "Absence"
+- Case vide ou "Repos" → "Repos"` }
         ]
       }]
     });
@@ -54,14 +60,13 @@ weekStart doit être le LUNDI de la semaine (ex: si planning du 8 au 14 juin, we
     if (data.error) return { statusCode: 400, body: JSON.stringify({ error: data.error.message }) };
 
     const text = data.content.map(i => i.text || '').join('').replace(/```json|```/g, '').trim();
-    console.log('Réponse IA:', text);
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
       body: text
     };
 
-  } catch(e) {
+  } catch (e) {
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
 };
